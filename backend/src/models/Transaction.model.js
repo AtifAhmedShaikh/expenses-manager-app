@@ -3,6 +3,12 @@ import { INCOMING_TRANSACTION, OUTGOING_TRANSACTION } from "../constants/index.j
 
 const transactionSchema = new mongoose.Schema(
   {
+    // transaction has associated this organization
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true,
+    },
     // type of transaction "outgoing" or "incoming"
     type: {
       type: String,
@@ -22,17 +28,18 @@ const transactionSchema = new mongoose.Schema(
     amount: { type: Number, required: true },
 
     // current date of transaction
-    currentDate: Date.now,
-
-    // total amount of organization before transaction
-    totalAmountBeforeTransaction: { type: Number, required: true },
-
-    // total amount of organization before transaction
-    totalAmountAfterTransaction: { type: Number, required: true },
+    currentDate: { type: Date, default: Date.now },
   },
   {
     timestamps: true,
   },
 );
+
+// middleware to set currentDate before saving the transaction
+transactionSchema.pre("save", function (next) {
+  if (!this.isNew) return next();
+  this.currentDate = new Date();
+  next();
+});
 
 export const TransactionModel = mongoose.model("Transaction", transactionSchema);

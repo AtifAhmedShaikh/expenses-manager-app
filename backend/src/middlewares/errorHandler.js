@@ -1,6 +1,4 @@
-import process from "node:process";
-
-const NODE_ENV = process.env.NODE_ENV;
+import { NODE_ENV } from "../config/envManager.js";
 
 const errorHandler = (err, req, res, next) => {
   // set default status code and message if not provided

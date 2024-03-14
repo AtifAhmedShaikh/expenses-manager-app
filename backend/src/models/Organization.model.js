@@ -7,7 +7,6 @@ const organizationSchema = new mongoose.Schema(
     name: {
       type: String,
       index: true,
-      unique: true,
       required: true,
     },
     // finance manager of this organization
@@ -29,17 +28,10 @@ const organizationSchema = new mongoose.Schema(
     totalIncomingAmount: { type: Number, default: 0 },
 
     currentBalance: { type: Number, default: 0 },
-
-    transactions: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Transaction",
-      },
-    ],
   },
   {
     timestamps: true,
   },
 );
 
-export const Organization = mongoose.model("Organization", organizationSchema);
+export const OrganizationModel = mongoose.model("Organization", organizationSchema);
