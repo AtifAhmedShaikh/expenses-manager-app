@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+import { OrganizationModel } from "../models/Organization.model.js";
 import { INCOMING_TRANSACTION, OUTGOING_TRANSACTION } from "../constants/index.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const transactionSchema = new mongoose.Schema(
   {

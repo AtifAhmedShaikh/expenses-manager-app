@@ -22,12 +22,6 @@ const organizationSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-
-    totalOutgoingAmount: { type: Number, default: 0 },
-
-    totalIncomingAmount: { type: Number, default: 0 },
-
-    currentBalance: { type: Number, default: 0 },
   },
   {
     timestamps: true,

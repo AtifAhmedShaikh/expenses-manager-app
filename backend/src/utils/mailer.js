@@ -1,6 +1,20 @@
 import nodemailer from "nodemailer";
-import { SMTP_FROM_NAME, SMTP_FROM_EMAIL, SMTP_PASSWORD } from "../config/envConfig.js";
+import { SMTP_FROM_EMAIL, SMTP_PASSWORD } from "../config/envManager.js";
 
+import path from "path";
+import hbs from "nodemailer-express-handlebars";
+
+const handlebarOptions = {
+  viewEngine: {
+    extName: ".hbs",
+    partialsDir: path.resolve("src/views"),
+    defaultLayout: false,
+  },
+  viewPath: path.resolve("src/views"),
+  extName: ".hbs",
+};
+
+// create mailer transporter
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -9,21 +23,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendNotifyEmailToClient = async ({ sendTo, title, message }) => {
+// use hbs template
+transporter.use("compile", hbs(handlebarOptions));
+
+// utility function to send email to user based on provided mail options
+const sendEmail = async mailOptions => {
   try {
-    const response = await transporter.sendMail({
-      from: `${SMTP_FROM_NAME} <${SMTP_FROM_EMAIL}>`,
-      // to: sendTo,
-      to: "atifahmad2219@gmail.com", //TODO: replace it to actual user email
-      subject: title,
-      text: message,
-    });
+    const response = await transporter.sendMail(mailOptions);
     return response?.accepted?.length > 0;
-    // if accepted length greater then zero means email successfully sended
   } catch (error) {
-    console.log("Something went wrong while sending Email to client ");
+    console.log("Something went wrong while sending Invitation Email to owner ", error);
     return null;
   }
 };
 
-export { sendNotifyEmailToClient };
+export { sendEmail };

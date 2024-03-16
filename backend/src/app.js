@@ -7,6 +7,7 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import { FRONTEND_ORIGIN } from "./config/envManager.js";
 import authRouter from "./routes/auth.routes.js";
 import transactionRouter from "./routes/transaction.routes.js";
+import invitationRouter from "./routes/invitation.routes.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.get("/", (_, res) => {
 // declare route
 app.use("/api/auth", authRouter);
 app.use("/api/transactions", transactionRouter);
+app.use("/api/invitations", invitationRouter);
 
 // handle 404 not found routes
 app.use((_, res) => {

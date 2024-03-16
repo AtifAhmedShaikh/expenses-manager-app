@@ -1,8 +1,11 @@
-// routes/transactions.js
 import express from "express";
-import { isFinanceManager } from "../middlewares/authZ.middleware.js";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
 import {
+  restrictedToFinanceManager,
+  attachCurrentUserOrganization,
+} from "../middlewares/authZ.middleware.js";
+import {
+  getOrganizationTransactions,
   addTransaction,
   editTransaction,
   deleteTransaction,
@@ -10,11 +13,17 @@ import {
 
 const router = express.Router();
 
-router.route("/add").post(authenticateUser, isFinanceManager, addTransaction);
-router.route("/edit").put(authenticateUser, isFinanceManager, editTransaction);
-router.route("/delete").delete(authenticateUser, isFinanceManager, deleteTransaction);
+// apply authentication middleware
+router.use(authenticateUser);
+//apply middleware to attach organization of current user
+router.use(attachCurrentUserOrganization);
 
-// route to retrieve all transactions of current org
-router.route("/");
+// index route to retrieve all transactions of current organization
+router.route("/").get(getOrganizationTransactions);
+
+// secure route of finance manager
+router.route("/add").post(restrictedToFinanceManager, addTransaction);
+router.route("/update/:transactionId").put(restrictedToFinanceManager, editTransaction);
+router.route("/delete/:transactionId").delete(restrictedToFinanceManager, deleteTransaction);
 
 export default router;

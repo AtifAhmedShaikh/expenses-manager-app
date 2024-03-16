@@ -1,3 +1,4 @@
+import {Response}from "../utils/Response.js"
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { UserModel } from "../models/User.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -26,19 +27,20 @@ const registerUser = asyncHandler(async (req, res) => {
     name: orgName,
     financeManager: createdUser._id, // attach user as a finance manager
   });
+
   const accessToken = createdUser.generateAccessToken();
-  res.status(201).cookie("accessToken", accessToken).json({
-    success: true,
-    message: "your organization has created !",
-    user: createdUser,
-  });
+  res.cookie("accessToken", accessToken, { httpOnly: true });
+
+  new Response(
+    201,
+    { user: createdUser },
+    "Organization has created successfully and your finance Manager",
+  ).send(res);
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
   const user = await UserModel.findOne({ email });
-  console.log("Here", user);
   if (!user) {
     throw new ApiError(404, "user not found !, Invalid credentials");
   }
@@ -48,20 +50,15 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const accessToken = user.generateAccessToken();
-  res.status(200).cookie("accessToken", accessToken).json({
-    success: true,
-    message: "you have been login successfully in your organization  !",
-    user,
-  });
+  res.cookie("accessToken", accessToken, { httpOnly: true });
+
+  new Response(201, { user }, "you have been login successfully in your organization ").send(res);
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
   // clear user cookies
   res.clearCookie("accessToken");
-  res.status(200).json({
-    success: true,
-    message: "you are logout successfully !",
-  });
+  new Response(201, {}, "you are logout successfully !").send(res);
 });
 
 export { registerUser, loginUser, logoutUser };
